@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Conference captions</title>
+	<meta charset='UTF-8' />
+	<!--<link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css' />-->
+	<link rel='stylesheet' type='text/css' href='/assets/css/bootstrap.css' />
+	<link rel='stylesheet' type='text/css' href='/assets/css/style.css' />
+</head>
+
+<body class='mode-wizard'>
+
+	<div class='wizard'>
+
+		<h1>Subtrack</h1>
+		<p class='lead'>Subtitles for live presentation</p>
+		<p>To display subtitles, enter the URL of a Google spreadsheet that contains three columns, headed "Original", "Machine translation" and "Custom translation".  Custom translations will be used if available, otherwise machine translation will be used. The spreadsheet must be <strong>published to the web</strong>.</p>
+
+		<div class='well'>
+			<form>
+				<div class="form-group has-feedback">
+					<label for='txtspreadsheeturl'>Spreadsheet URL:</label>
+					<div class="input-group">
+						<input type="text" id='txtspreadsheeturl' class="form-control input-lg" placeholder="eg. https://docs.google.com/spreadsheets/d/17Or0YaUEGtoK-OaxVWs1axz6ABLDJDwohwHOyfmxwF8/edit" aria-describedby='spreadsheeturl-help'>
+						<span class="input-group-btn">
+							<button class="btn btn-lg btn-primary" type="submit">Load</button>
+						</span>
+						<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+						<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+					</div>
+					<p id="spreadsheeturl-help" class="help-block"></p>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<ul class='captions'></ul>
+
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js'></script>
+	<script src='/assets/js/app.js'></script>
+
+</body>
+</html>

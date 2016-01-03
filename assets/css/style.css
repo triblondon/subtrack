@@ -1,0 +1,27 @@
+/* Global styles */
+
+* { box-sizing: border-box }
+body, html { width: 100%; height: 100%; overflow: hidden }
+body { font-size: 1.75vw; display: flex; flex-direction: row; align-items: center; }
+
+/* Panels */
+
+.captions { display: none; list-style: none; flex: 0 0 auto; position: relative; width: 100%; }
+.captions li { position: absolute; left: 2vw; right: 2vw; font-size: 3vw; transform: translateY(-50%); transform-origin: 50% 50% 80px; transition: all 0.5s ease; }
+.captions li.past { opacity: 0; transform: translateY(-50%) rotateX(-70deg); }
+.captions li.future { opacity: 0; transform: translateY(-50%) rotateX(70deg); }
+
+.wizard { display: none; margin: 0 calc(2vw + 20px);}
+.wizard .form-control-feedback { right: 95px; }
+
+/* Hide/display main content panels based on app mode */
+
+.mode-captions .captions { display: block; }
+.mode-wizard .wizard { display: block; }
+
+/* Bootstrap overrides */
+
+.help-block { margin-top: 0.5em; }
+.has-feedback .form-control-feedback { display: none; top: 50%; transform: translateY(-50%); }
+.has-feedback.has-error .glyphicon-remove { display: block; }
+.has-feedback.has-success .glyphicon-ok { display: block; }
