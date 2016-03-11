@@ -7,11 +7,11 @@ var keygroups = {
 
 $(function() {
 
-	function move(newEl) {
-		if (newEl) {
-			newEl.prevAll('li').addClass('past').removeClass('current future');
-			newEl.addClass('current').removeClass('past future');
-			newEl.nextAll('li').addClass('future').removeClass('current past');
+	function move(newEls) {
+		if (newEls) {
+			newEls.prevAll('li').addClass('past').removeClass('current future');
+			newEls.addClass('current').removeClass('past future');
+			newEls.nextAll('li').addClass('future').removeClass('current past');
 		}
 	}
 
@@ -41,14 +41,18 @@ $(function() {
 			dataType: "jsonp",
 			success: function(data) {
 				clearTimeout(timeout);
-				$('.captions').empty();
+				$('.captionlist').empty();
 				data.feed.entry.forEach(function(entry) {
-					var caption = entry['gsx$customtranslation']['$t'] || entry['gsx$machinetranslation']['$t'];
-					if (caption) {
-						$('.captions').append('<li class="future">'+caption+'</li>');
+					var src = entry['gsx$original']['$t'];
+					var target = entry['gsx$customtranslation']['$t'] || entry['gsx$machinetranslation']['$t'];
+					if (src && target) {
+						$('.captionlist--src').append('<li class="future">'+src+'</li>');
+						$('.captionlist--target').append('<li class="future">'+target+'</li>');
 					}
 				});
-				$('.captions li').eq(0).addClass('current').removeClass('future');
+				$('.captionlist').each(function() {
+					$(this).find('li').eq(0).addClass('current').removeClass('future');
+				});
 				setUIMode('captions');
 			}
 		});
