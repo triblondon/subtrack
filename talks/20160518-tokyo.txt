@@ -1,0 +1,155 @@
+
+Konichiwa! Thank you for coming today. You can find me on Twitter at @s10wen if you'd like to ask me any questions regarding this talk. The slides are available online at http://s10wen.com/japan2016 and the link is in the footer.
+
+I'm Simon Owen, a front-end developer working for The Hut Group in the UK. I run McrFRED, a monthly meetup for front-end developers. I also run digihike, where we go hiking and last year I ran my first conference called upfrontconf and I'm looking forward to the 2nd one at the end of this month in Manchester, UK.
+Here are some of the things I've worked on; I taught at Salford University in the UK. I work on a big E-business platform for The Hut Group, currently running over 100 websites internationally. And won awards for various sites for boxers, actors and charities.
+
+So, before I begin, I'd like to mention a disclaimer. In this talk, I'll be going over some of the things that help me with my workflow. This doesn't necessarily mean that they will work for you. So, I'd advice you to find out what works for you.
+That said, here's a way to park a car.. Here's another way... Here's another way....
+And, here's another way. So although there are different ways of doing things, some ways may be better than others.
+
+In the beginning, sometime around 1999, Using Web Studio, Version 1.0 for Windows.  I built a website!
+
+Check out the awesome buttons!
+
+Over 10 years a lot has changed, I'm now writing actual code instead of using a gui.
+
+Some things haven't changed, I still love gifs
+
+We all know the web is moving very fast. There's lots to learn We can't learn everything. But let's not panic.
+
+We have help.
+
+and I'm here to help today. I'm going to go over 4 topics; apps and tools, health, team work and my thoughts on 'improve and produce' where I'll talk about the relationship between improving yourself and being productive.
+
+First up, Apps and Tools
+
+As developers it's important we test and use different browsers.
+
+A lot of these browsers have great super powers and I ofter encounter developers who aren't aware of how much the browser itself can help. For example in Chrome, there's 'chrome flags'. This option can allow you to switch on extra settings and see experiments Googlers are working on.
+
+Using the Network tab in Chrome Dev Tools allows you to be able to test poor connections using network throttling.
+
+Using 'device mode' it's possible to emulate different devices, this is very useful for responsive testing and debugging.
+
+One of the charity websites I built relied heavily on CSS transitions and SVGS, using the 'timeline' was essential for me to avoid 'jank'.
+
+As I use a Mac, I also use Virtual Box to allow me to test Internet Explorer and I also use GhostLab. GhostLab is a handy app that allows you to connect any number of browsers and devices and keep them in sync. For example via navigation, scrolling and filling in forms.
+
+When using version control I often use the command line but for quickly viewing changes for a commit and pushing multiple parts of file changes as different commits I prefer to use a gui. I use GitHub Desktop as I like the clean interface. Then I find Source Tree helpful for working on bigger projects and helping with conflicts.
+
+There's also a new app called GitUp and I like the way this app displays branches and makes use of shortcuts.
+
+For coding, I use Sublime Text. For a quick diff of a file, FileMerge, and for the command line I use iTerm as it gives you some extra features such as split panes, better search and autocomplete amongst others.
+
+As a developer communication is key. To help me communicate I use various tools; 'Skype' for talking to people via webcam. 'Twitter' I find helpful to ask for advice and keep up to date with what other developers are up to. 'Trello' is a web app that that allows you to setup different groups and add cards to those groups. You can then assign people in your team to those cards and track progress.
+
+'Slack' is becoming more and more popular as a means to chat instantly and share files, as well as automating parts of a workflow, such as automatically posting commit messages when code has been pushed. I find Google docs and sheets especially useful for collaborating with many team members. Recently we used Google Docs to discuss standards for linting rules, so all team members could have an input and discuss the rules.
+
+Other essential apps for me include; 'Spotify' to listen to music. 'Dropbox' to sync files across multiple devices, and 'Transmission' to ftp and back up files on my own server.
+
+There's many tools that are available to us today. Some of the ones I like are; 'Yeoman' for quickly getting a prototype up and running 'gulp' to create various tasks such as compiling Sass to CSS and performance wins with minification. I also love browsersync for watching Sass changes and pushing directly to the browser to avoid having to refresh the browser window.
+
+Second up, let's talk about Health
+
+I believe that health is far too often overlooked. If you don't look after yourself, all the work you've put in to being as productive as possible comes to a complete standstill.
+
+Here are some of the apps I use that help me with my own health; This year I started meditating using headspace. I try to do this for 10 minutes every day. I find it really helps me to refocus. I often miss days, but I don't stress about this, I just pick it back up when I can. In an office environment it can often get noisey. To help with this I use noise canceling headphones, and listen to music and help me concentrate.
+
+Sometimes, simply not having to stand up all day and also getting away from a computer and using a notepad and pen can be the best option and help you to work out the solution to a problem. Above all, though, use your mind, and think! There's no use in working all hours of the day and coding up a solution to a problem that doesn't exist.
+
+Research studies show that in dark environments having a glaringly bright white screen can cause extra stress on your eyes and brain. To help with this, Apple introduced a feature called 'night shift' for iOS that gradually reduces the amount of blue light later in the day before you go to sleep. People have reported, better concentration and better sleep patterns using this. There's also an app you can get called Flux to use on a Mac.
+
+Here you can see how flux shows less intense white when it's activated.
+
+Going back to browser super powers, did you know you could also add a theme to the chrome dev tools?
+If not, I wrote up a version of the Monokai theme and blog post you can check out.
+Chrome also has a default dark theme which I'm looking forward to seeing further development on.
+
+Last year I volunteered at Smashing Conf in Oxford and I really enjoyed Christopher Murphy's talk entitled 'A good writer is a good thinker'. One particular part of the talk I enjoyed was where Christopher talked about 'increasing your scope'. You never know when something seemingly completely unreleated to tech will help you solve a problem.
+
+The Finland Education System takes a similar approach. Rather than mindlessly reading tutorial books to children, they took a different approach. They have less hours in school and no homework. They encourage children to go outside, increase their scope and work things out for themselves. This resulted in much higher exam results.
+
+As well as increasing your scope by learning about other things, I also find it beneficial to 'reset' and have a non tech related hobby. I wrote an article in NetTuts about this, that I'll be publishing on my site soon. I enjoy hiking and playing the piano.
+
+As well as meditation, something else I started doing this year was writing notes at the end of the day. I spend 1-2 minutes writing some quick bullet points. I also try my best to remain positive. So for example rather than writing; 'I forgot my headphones today', I'd write 'remember headphones for tomorrow'. I use 2 apps to do this, PlainText which is an iOS app so I can create new text documents and update them on my iPhone, and dropbox to sync them across devices. Similar to meditation, sometimes I miss days, but I don't worry about it if I do and sometimes I'll go back and fill in multiple days.
+
+Most developers spend a lot of time at a desk, so organise it to fit your requirements. Here's a photo of 2 developers in the UK that I know who have shared photos of their desks. Andrew prefers a nice clean desk like I do. Anna prefers a very messy desk. Again, I don't think there's a right or wrong here, but I'd advice you to have a look at your own desk, maybe there's some improvements to be made.
+
+Above all. Don't burn out. If you work yourself to illness then you're not helping anyone.
+
+Next up, Team Work.
+
+Within a team, it's important to remember that everyone is different. People communicate in different ways, they learn in different ways and have different strengths and weaknesses. People can also change on a daily basis, you never know what might be going on in their personal lives.
+
+Within a team with so much variation there's a lot to gain from making micro improvements. I love this post from James Clear who writes about the British Cycling team and how Dave Brailsford set about making micro improvements to win the Tour de France in five years time. He was wrong, they actually won it in three years. Constantly being on the lookout and making micro improvements can lead to massive overall improvements over time.
+
+And now I'm going to go over some of the micro improvements I like in my workflow, such as Emmet. This was previously called Zen Coding and it allows you to tab complete code. Here's an example;
+
+Another micro improvement is aligning lines of code that can be edited across multiple lines using the package 'align by' and then holding down 'alt' to select multiple lines.
+
+One of the most important micro improvements for me is shortcuts. Most apps have shortcuts and more and more websites are also introducing them, such as GitHub. Avoiding moving your hand from the keyboard to mouse, or moving the mouse cursor from one side of the screen to another is a great time saver over time. One day many years ago, a friend of mine hid the toolbar in Photoshop. I've never turned it back on. Here's a video of me editing an image I used at the start of the slides, using shortcuts.
+
+Something else I also find extremely useful is being able to use a keyboard without looking at it. This saves time because you're not constantly moving your head to look at the screen, then keyboard, then back again and it's also useful if you can type whilst having an unrelated conversation. To aid you with learning to do this, there are keyboards available that have no characters on them, forcing you to learn. Andrew mentioned that many of you already do this, as in Japan you have 3 alphabets and often need to switch between them.
+
+Setting performance budgets can be a great help. If you put a site live then develop on it over time and monitor performance, if something goes over your threshold you can fix it straight away and debug the issue quicker.
+
+So for example some of the things you could track are the amount of http requests you have, your first page load time and 404s.
+
+Brad Frost even wrote a handy tool to help you build up your own Performance Budget.
+
+How often do you hear the following; There's too much to do, there's too much code, all the code is shit. Recently I've been working on a huge project with 10 years worth of legacy code and I've been looking to improve inconsistencies across the buttons. As I looked for the button code, I discovered code in jsp templates, handlebar templates, java code and other random files. It was a big task, but I broke it down into smaller manageable tasks and then started making my way through each task. I took the same approach for writing up these slides and this talk.
+
+I don't know about you, but I'm not a fan of doing mundane tasks, copying and pasting the same code over and over can get tedious and time consuming, therefore I love automation. One day I discovered a dotfiles repo on Github. I didn't know how dotfiles worked or understand the code, but I did know that the end results would help my workflow and especially setting up a new machine. So I forked a repository and started going over it line by line. From doing so I learnt a lot and drastically improved my workflow. There's a lot of possible improvements when using dotfiles. I'll go over some of them now, but if you're interested in learning more, I wrote an article that's up on TutsPlus.
+
+First of all let me briefly explain what a dotfile is in case anyone hasn't used them before. A dotfile, is a file with a dot before the filename, this might seem obvious, but I've met a number of people who didn't know this at first, then it clicks and they go 'ahhhhhhhhh'. One dotfile I use for every project is an editorconfig dotfile. This file allows me to set indent styling rules and to trim trailing whitespace. When collaborating this helps keep the codebase consistent and easier to understand.
+
+The aliases dotfile allows me to set up some handy shortcuts, so for example if I'm in iTerm and wanted to open the current directory in Sublime text, I could type 's' and for easier navigation of directories rather than typing 'cd ..' I use '..' and instead of 'cd ../..' I use '...'.
+
+Quite often I'll want to start a new project by creating a new directory then doing something inside the directory. So ordinarily you'd do 'mkdir' and the directory name, then 'cd' into it, but there's a better way using this bit of code.
+
+So now using 'mkd' we can create a directory and… also be in it, I love these little time savers.
+
+Previously I mentioned that I'm working on a refactor for some button code and that the code was in various multiple files and as such sometimes it was difficult to find the code I was after. To combat this my friend Craig helped me with some bash script where I could specify a string I wanted to find. It then finds all instances of that string and adds a unique identifier to it.
+
+Meaning that I can then reload the page, see a number next to the code, and as it's unique, find the code I'm after super quick.
+
+This is all very clever and efficient, but try not to be too clever or things can get over complicated and inefficient.
+
+There's a principle for this called KISS. Keep it simple stupid.
+
+Another thing to consider as well as over complicating, and going back to using your mind, is to always question whether or not you actually need something in the first place.
+
+And when you have established the things you require, evaluate and priorities them. For example, which would be best. A delightful retina hero image weighing in at 20mb, or allowing people to view the site quickly and offline. Like maybe implementing service workers?
+
+I believe there's a SW talk up next, and just in case it's not shown, here is the ServiceWorker logo.
+
+Add sugar as required. There might be a new fancy tool out that everyone's jumping on; gulp, broccolli, fez, react, etc etc. But again, ask yourself, do you actually need it?
+
+And if you do think you need it, have a taste first yourself to see what it's like.
+
+There's plenty of online tools to help with this such as JS Bin, CodePen and JSFiddle.
+
+Something else that can often help when trying out something new, is using a ' test case reduction'. If you're working on a large code base and implementing some new code, there may be additional complications with getting it set up with your existing code base. To help with this, sometimes it's better to reduce the amount of complications and get the new code working by itself first, then implement into your code base. Jake Archibald, a Google developer advocate from the UK helped me fix an issue that was caused by a bug in Safari by using this method.
+
+And when implementing something new, it's important to make sure the rest of the team also understands how it works. If you've been working on it for a long time simple things to you might not be so simple for someone who is learning it for the first time. So consider how you can make things easier for other team members to understand what you've been working on.
+
+Above all, don't go solo in a team. Implementing your own code because you want to that will disrupt or change everyone else's workflow isn't going to go down well with the rest of the team.
+
+Forth up, Improve and Produce
+
+This last section is small, but I think one of the most important and I encounter this issue constantly. You're asked to improve some code and produce new work. So, if you improve the code, produce new work and continue in this way, this is what will happen. However, often you'll be asked to produce the work and '"just" get it done' and what you can do to get the work done faster. So what happens then is you produce the work and say you'll improve it in 'phase 2' but then some more work comes in and more and more and more. 'phase 2' never happens and you end up with producing a lot work and a lot of shit to go with it, then as time goes on, more and more shit has to be added over the existing shit.
+
+To help combat this issue I think it's important to highlight to the business code dept as soon as possible. So for example, if a piece of work comes in and you estimate a day to do it properly and the business requires you to do it in half a day, you can say ok we can hack it in and that will take half a day, but it's then going to take another x amount of days to go back and refactor it. If this continues, you can then evaluate all the work done and all the code dept you've introduced, generally the more bad code that goes in will then also have an impact on other aspects. Further work produced is going to take more time to complete, it's more likely to break, and have bugs. It's going to be harder to work on in the future and for other team members, and it's probably going to be less performant as well. This approach will also be beneficial for managers so they are fully aware of the issues that arise when rushing code and the need for time allocation for self-improvement.
+
+Before I finish the talk, I'd like to go over some closing thoughts. At the start of the talk I mentioned communication and Twitter, for this talk I used Twitter to gain feedback from the community regarding what people were using in their worklflow and where they were running into issues. Using this feedback I created notes and set slides up to address them.
+
+I've shown this graph a few times in various talks and it always seems to go down well. The person who always copy and pastes will get it done and it will be right, but time consuming and boring. The 'geek' developer will get frustrated of doing a mundane task, write a better solution, then be much faster going forwards and be able to work on something more interesting. The 'geek' always wins eventually!
+
+I was once speaking to Scott Jenson who's doing some great work around the Physical Web. We were discussing about how everyone has that first encounter of the Internet / The World Wide Web. I like this page entitled 'This is a web page', it reminded me of why I first got into web development. Although there are many tools and process in today's developer workflows, you can sill FTP into a server, create a document, write a bit of HTML and some words on it and it be viewable across the world. This really is incredible to me.
+
+And one more thing, here's a secret.
+
+Even if you're new to front-end development or have been doing it for many years: 'no one else knows what they're doing either'. Things are changing all the time and it's new for everyone. This keeps things very exciting and some times frustrating with different opinions, but I love this and the willingness that we have as a community to help one another and learn together.
+
+Thank you very much for listening, and 'Yousu?' for translating. I hope some of the topics I've covered will help you in your day to day workflow. I'd love to go out afterwards for some knee-hon-shoe, if anyone has any questions they'd like to ask me then, I'd be more than happy to answer them. Domo Arigato Gozaimasu.

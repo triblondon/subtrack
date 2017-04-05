@@ -1,0 +1,106 @@
+Hello, I'm Andrew Betts, I work for the Financial Times and today I'm talking about polyfills.  Polyfills are snippets of JavaScript which can be used to fill gaps in support for modern web features in old browsers.
+
+Let's start with an example. In the ES6 JavaScript standard, a new function was introduced, a few years ago, to check whether an input was a number.  You may know of the existing `isNaN` function, but `Number.isNaN` was added to fix a few issues with the older implementation.  If it's supported, it makes sense to use it, because it's better.  The problem is, since it's only just been introduced, it is unlikely to be supported in all the browsers that are used by all your users, so you might end up just sticking with the older function, and that means you can't take advantage of the new stuff. That sucks, so let's see what we can do about it. 
+
+Today, this is what the support for this function looks like, across all the recent versions of the most popular browsers, according to caniuse.com.  It's pretty good in the latest versions, but if your users have any version of Internet Explorer, or an older iPhone, or they're using Opera Mini, they're probably out of luck.
+The great thing about JavaScript though, is that if something doesn't exist we can often just go ahead and create it.  And creating this particular function turns out to be really easy.  
+
+Here's a pretty good implementation of Number.isNaN.  You can see that we are assigning to the global variable where we expect to find this feature, and if it already exists, we use the existing one.  That's the green expression here.  If that returns undefined, then we'll evaluate the right hand side of the OR statement, and assign this custom function - the blue one - to the global variable.
+We can now use Number.isNaN in all browsers and expect it to work everywhere.  
+
+Where it's supported natively, we'll get the native solution, and where it isn't we'll use the polyfill, but our code doesn't need to know which one ends up being used.  The important thing is that we can write our code using modern standards right now.
+
+So, we filled in the gap. We fixed the Web, made it work even though maybe it had a piece missing. This is the promise of polyfills, and in a minute we'll see why this doesn't always work, and how it can actually be dangerous and hold back the progress and evolution of the web.  We need to be careful and use this power well.
+Before I get into that, let me tell you why I care about polyfills.
+
+I started life running my own web development company in London, and in 2006 we started working for the FT.  One of our FT projects was the FT web app, app.ft.com, one of the world's first major 'HTML5 web apps' which worked offline and could be saved to the homescreen of your iPhone.  My company was acquired by the FT, and then I ran several teams at the FT, including our Origami front end components team and FT Labs.
+The FT was acquired by Nikkei, and I moved to Tokyo to help Nikkei to develop a new version of Nikkei.com, building on the experience that we had at the FT, and I was also elected to the W3C's technical architecture group, which is responsible for looking after the overall health and evolution of the World Wide Web.
+As part of the Origami team's work, I created a service called polyfill.io, which began my interest in polyfills and is now the world's most popular CDN serving polyfills directly to websites all over the web, currently around 1 billion polyfills per month.
+Also along the way I might have developed a slightly unhealthy obsession with Yuru Chara characters.
+
+So I had an interest in polyfills, from running polyfill.io, and as a member of the TAG (these are the TAG by the way) I have an interest in the long term health of the web.  So I persuaded the TAG to spend some time investigating the role of Polyfills on the web. Two weeks ago we published our finding, which is called Polyfills and the evolution of the web.
+
+This it, and you can find it on our github pages.  Let's dive in, and look at the potential problems that we documented.  Here's an example.  
+
+The TC39 standards group is the team that looks after the JavaScript language.  A few years ago when they were working on the next version of JavaScript, they wanted to standardise a method of arrays called contains.  With that method you could do things like….
+
+this.  This is obviously a useful feature of arrays that saves developers time, and no-one wants to waste their life typing `indexOf !== -1`.  This is easier to remember, easier to read, easier to reason about.  Easier to maintain.
+
+In fact, it is so much of a no-brainer that the JavaScript framework Mootools already did it years before the standard was even proposed, and they built that function into their library.  At the time, the Mootools project had a policy of creating useful functions directly on the prototypes of global objects, and so for anyone using Mootools, `Array.prototype.contains` was already defined.
+The problem is, when we came to standardise the contains method as part of the language, we found that the Mootools version was slightly different in a way that didn't make sense to copy in the standard version.  And sites using Mootools would break in browsers that supported the standard version.  Mootools fixed the problem really quickly, but millions of sites that use the earlier version would continue to do so.
+As much as many of us working in web development would love to think that we will come back to a site later and update dependencies, remove a polyfill we no longer need, add support for updated browser features, the reality is that we often don't, and those sites continue to be used. Browser vendors like Microsoft and Google, who we call "implementors" in the standards community, obviously don't want their browser to seem broken, so they are reluctant to implement the new feature if they know that some sites which haven't been updated might break.
+Imagine. If Microsoft implements a new standard feature, and it makes Twitter break in Edge, but Twitter still works fine in Chrome, that seems like a bug in Edge, not a bug in Twitter.  But actually maybe it's Edge having better support for web standards. In business, winning a 'moral victory' doesn't really achieve anything, you need users!  So browsers just simply won't ship a feature that will break websites.
+
+The fact that we leave our code to rot is not just a feeling, it's backed up with good research.  These numbers come from a 2013 blog post by Steve Souders, looking at data from HTTP Archive.  He found that almost none of the sites which load jQuery from the Google hosted libraries CDN are using the latest version.  In fact, many of them are using a version that has been out of date for years.
+
+In the case of the Array contains method, the solution was pretty simply: rename it.  Today, most browsers intentionally don't support contains - they want to avoid breaking the sites that use that old version of Mootools - but they DO support includes, which is the same thing using a different name.
+This is far from an isolated example.  
+
+More recently, a well respected polyfill author wrote a polyfill for a feature he was excited about, but that feature had not yet been implemented by any browser. There was an immediate risk that if people adopted this polyfill in large numbers, the spec would not be able to change.  Fortunately the polyfill was renamed to avoid freezing the specification in its current state.
+
+To avoid these problems, we need to look at the development of web features in stages.  In the early stages, we're discussing the idea of a new feature, and playing around with prototypes in one browser, probably behind a flag.  The feature is unstable.  It could change at any time.  Then, we go through a standardisation process, and when the spec is stable, it can be implemented by multiple browsers.  Now it's in multiple browsers, it's stable. But now we have to wait, sometimes a very long time for support to spread to every browser.  In fact, sometimes universal support never happens because one browser chooses not to implement the feature at all.
+[BUILD]
+In the TAG finding, we have defined a "tipping point".  It is triggered when a feature has multiple interoperable implementations, in 2 or more browsers.  Before this point, polyfills that are too aggressive will potentially block the feature from being properly standardised. That's a problem for the web.  But after the tipping point, polyfills help us achieve universal support much faster and also encourage developers to adopt the feature, and so are hugely valuable.
+
+There are two 'danger areas' where our behaviour should change when the tipping point is reached. We've talked already about using the proposed name, but a second issue is deferring to a native implementation if it exists.  As you can see from these code examples, these two behaviours can be exhibited separately, but both are behaviour that you should avoid for features that are pre-tipping point.  In the first example here, we are checking for a nativeFoo, and if it doesn't exist, using a polyfillFoo, but assigning the one that we choose to a custom myFoo variable, so we don't ever overwrite the native version.  In the second example, we overwrite the native variable name with the polyfill, but we don't check for native support, so even if the native support exists, in this case we'd still use the polyfill anyway. 
+After the tipping point is reached, you can go ahead and use the proposed name, and also defer to a native implementation if one exists.  And in most cases it makes sense to do both at the same time. 
+
+Here's an example of doing that for the Number.isNaN polyfill that we saw earlier on.  At the pre-tipping-point stage, we use the polyfill, and we assign it to a custom name.  We are not treading on the proposed name, and we are not deferring to any prototype native implementations.  Later, we can change the approach, to detect if there is a native implementation and use it if so, otherwise use the polyfill, and assign the one we choose to the canonical, standard name.  This should be safe because at this point, post-tipping-point, it's possible to test, robustly, that the polyfill is offering the same API and same behaviour as the native implementations.
+
+Our finding makes recommendations for lots of different polyfill stakeholders: polyfill authors, website developers, people who build libraries like React, PouchDB, jQuery etc, polyfill distributors which includes services like polyfill.io, and spec editors - the people who are developing the specifications for these new features.
+
+We've covered the key recommendations that change at the tipping point, but as website developers there are some other things to consider about using polyfills generally.
+
+First, understand the stability of the polyfill. Polyfills actually vary enormously in quality, and it's worth spending a bit of time figuring out whether you're importing something that is well tested, is an accurate emulation of the feature you need, and is performant.  I've personally encountered plenty of polyfills that hammer the CPU, implement only a fraction of the specced API, take outrageous shortcuts, only pretend to implement the feature but actually do nothing at all, or even act maliciously.  The main sign of quality is a comprehensive test suite.  There's a test suite maintained by the W3C for the whole web platform called "web platform tests" and so it's obviously fantastic if the polyfill passes those tests.
+It's impractical for every polyfill to be perfect, and you don't necessarily need a perfect polyfill, but you should be aware of what you are getting and what effect it has on your site and your users.
+
+These days people upgrade their browsers much faster than before, and you will probably find that the majority of your users don't need any polyfills at all.  We should be looking forward, not back, so it makes sense to not disadvantage users of modern browsers by shipping them a ton of polyfills that they don't need.  That said, if all your polyfills together are not very big, maybe it doesn't matter and you can just include them for everyone.
+
+Polyfill.io has a good example of how to do feature detection if that's the best option for you. Here's a link to read and I've also made a JSBin demo that you can try out.  It's important that the solution supports the case where no polyfills are needed at all, so where that is the case it should not make any extra requests.
+
+It's also important to keep polyfills that you use up to date. We've already seen that as developers, once we ship a website we often don't update the libraries that it uses, even for many years.  That's a huge security problem as well as a potential bottleneck for web evolution, so if possible, you should get into the habit of using a module registry or service to supply your dependencies, in a way that enables you to update them easily.  This image shows a neat tool for NPM called npm-check, which will scan and update all the dependencies in your project.
+
+When we're developing sites we're often using powerful machines running the latest software, or even pre-release beta software - I'm sure many people in this room are regularly using Chrome canary or Safari Technology Preview.  And we usually have super fast internet connections.  But that's not true of our users, is it, and especially so if some of your users are in emerging markets like India.  This phone here is the cheapest Android handset in the world, and costs about 30 US dollars, unlocked.  Don't expect your half a megabyte of JavaScript to work very well on this thing.  Often users of these kinds of devices will use a proxy browser like Opera Mini, which means your fancy code isn't even running on the user's device anyway.  This is just one category of underperforming browser, and there are plenty of other more exotic ones that I'll come on to in a minute.
+When your site loads on one of these less capable devices - whether it's a super old desktop browser, a cheap phone, an exotic niche browser with a really old rendering engine, or something else entirely - you have a few choices.  
+You could try and load all your polyfills, but it's probably better to adopt a more forgiving approach.  Maybe just don't use the feature if it's not supported - if that's an option for you.  Or use a tool to convert your code so it uses older features to achieve the same thing, like Babel.  Or maybe create a separate version of your site that is much lighter and designed specifically for these kinds of device - a "lo-fi" or "basic" mode.  Finally, you could always consider falling back to a message saying... sorry, your browser just isn't going to like my website, please use one that does!
+
+Our last recommendation is about caching.  Polyfills are the sort of thing that are likely to be static content.  Make them load super fast by adding an `immutable` directive and a very long `max-age` to your Cache-Control header.  If you can, use a CDN.  Use services like WebPageTest or Speedcurve, or tools like Google's Lighthouse to test your caching rules and check you're getting the best possible cache performance.
+[PAUSE]
+In the finding we provide more detail on all these recommendations, and also make recommendations for all the other polyfill stakeholders, so if you write polyfills or you maintain an open source project that makes use of polyfills, there's more stuff in there which might be interesting for you.
+
+I want to finish by looking at a related topic which we call The Evergreen Web.  When the TAG published our polyfill finding, we also published a second finding - much shorter - about keeping the web up to date and moving forwards.  
+
+In recent years, most mainstream browsers have started to include automatic updates, which are increasingly aggressive about making sure that you are always being upgraded to the latest version when it is released.
+
+These good browsers are the ones we know well - Firefox, Chrome, Edge, Safari, Opera.  But there are many other possible ways to browse the web on devices and using browsers that may not be up to date, and may not be very good at all.  Things like Non-Google Android, which is popular in China, super cheap handsets which you find a lot in India, niche browsers that use really old rendering engines, and internet of things devices with embedded browsers
+
+This is the result of loading HTML5 test on my Macbook, running the latest dev version of Google Chrome.  I get 519 out of a possible 555 points, that's pretty good.  Not many features missing here.  We're in the web standards dreamland where everything works.
+Now let's dive down to the web standards hell and talk about…. "Things".  
+
+I like things.  I have a Nest thermostat and if my house catches fire I get a convenient push notification, but the Internet of things is a pretty new and scary place.  
+
+I mean, there was that time that thousands of toasters got hacked and started attacking Twitter.  Whether we like it or not, many of these new Things of the internet have web browsers and screens that you can use to load whatever websites you like.  And they are ...pretty...bad.  
+
+Here's one I looked at the other day, scoring a not-very-impressive 135 points on HTML5 test.  Can anyone tell me what kind of device this is?
+
+It's a car.  Seriously, it's a web browser in a car.  Because…. actually I have no idea why you would want to browse the web in your car.  This is a car I rented when I was on holiday in England recently.  And it's certainly not the worst browser the TAG has found in a Thing.
+
+Try this one - 127 points.  What kind of device might need a web browser and can only manage 127 on HTML5 test?  I'll give you a clue - it takes a lot of physical effort to operate this browser.
+
+It's a treadmill.  In a gym.  I can only hope that when the browser crashes it doesn't force you to an instant stop on the running track as well.
+But even that isn't the worst Thing I've found a web browser in.  That award goes to a hotel in Finland, which produced this.  
+
+OK, someone tell me what kind of device this is.
+I'd love to say it's a fridge, but…. it's a TV.  
+
+Not just a TV but a "Smart" TV, apparently.  Hopefully no-one wants to use your website on this thing, because it's pretty unlikely to work.
+
+In our Evergreen web finding, we made a few recommendations to try and prevent this kind of thing being a problem for the evolution of the Web.  It's fine if these devices use web browsers to display their UI - the car radio interface, or the treadmill controls, or the TV programme guide, for example.  But just because the device has a web browser in it does not mean the manufacturer should expose the browser to the user so they can browse the public web.  As soon as you do that, you need to make sure you support a broad range of modern web standards, and you need to push updates frequently and automatically.  You need to keep up.  Otherwise, you are falling behind and breaking the Web.
+And for those of us building websites, we can consider these devices to be in the category of "least capable", and maybe we consider not polyfilling, but instead serving a 'basic' version or even just a message to say that the browser is not supported.
+
+I'll finish with a quick plug for my service, polyfill.io.  I've mentioned it a couple of times in this talk, and if you are interested in a quick and simple solution that meets many of the recommendations of our polyfills finding, you may find that Polyfill.io fits the bill well.  It works by analysing the User-Agent header of incoming requests, determines which features are required by the browser that's making the request, and then serves them in a neat bundle, with fabulous performance, through Fastly's global CDN.
+
+Today we're serving around a billion polyfills per month, growing all the time, and the more developers join us, the better we can make this as a resource for the whole community.  So, please do use it, add more polyfills, join in the fun!
+[PAUSE, SLIDE]
+Thanks for your time and if you'd like to ask me any questions please feel free to grab me in the break or ask now if we have time.
+
