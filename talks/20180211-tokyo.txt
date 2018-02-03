@@ -1,0 +1,115 @@
+# Vary talk transcript
+
+Hello everyone, I'm Andrew, I work for Fastly as a developer advocate, and I have an unhealthy obsession with the HTTP Vary header!  Last year I lived in Tokyo and was working at Nikkei, so I know a little Japanese.  Unfortuantely not enough to talk about HTTP so I will talk in English and subtitles made by Yuya will appear on the screen over there.
+
+You are all frontend developers or interested in frontend development, and you might feel that HTTP is outside of your area, not part of frontend development.  But I think the way we load our web pages and resources is one of the most important parts of making sites work in the browser.  But people like to be able to see the payoff befinre they invest time in understanding something, so let me give you a few examples of why you might be interested in Vary!
+
+Do you build React, Ember or Angular apps?  If you do, maybe you have a bootstrap HTML page or server-side rendered first view, but after that you use API requests from JavaScript to fetch and submit data.  Using Vary you don't need to have separate URLs for the fully rendered vs data-only views of the same data.
+
+Have you started thinking about using Brotli?  This new compression standard works in modern browsers, and makes your pages 20% smaller, but if you want to support legacy clients, you'll need to support gzip too.
+
+Have you heard of client hints, and wondered how to use the Save-Data hint to generate smaller, lighter pages when the user is telling you that they're on a bad or expensive connection?
+
+Do you make your site in multiple languages, and need to serve the one that matches the user's language preferences WITHOUT making them click a button or link to switch language?  This is a letter I wrote objecting to some bad practices in Google's AMP project, and it was kindly translated for me into 10 languages. If you visit this URL in your browser, you should get the version that matches your device's language preferences automatically.
+
+Maybe you want to use one of the fancy new image formats, JPEGXR, JPEG2000, mozjpeg, or webp, and you know that each one has very limited browser support, so each image will need to be available in all formats.
+
+All of these are examples of an idea called content negotiation.   This has been around since 1997, when the Vary header was introduced into HTTP in RFC 2068, but it hasn't really ever been used for any of the things I just listed.  So what's it designed for?
+
+Well, imagine that you're having a conversation with your bank, and you want to see your statement.  You tell the bank to GET the /statement resource.  Because you haven't provided any additional context for your request, the bank decides to send you a webpage. It tells you it's going to do this before you start receiving the data, using a Content-Type header which says the statement is text/HTML format.
+
+That's great, but you want to export this data to a spreadsheet.  The resource that you want to download is still the same thing, your statement, you just want it in a different format.  So instead of going to a different URL, you just reissue the request for the same URL, but this time with an additional HTTP header, Accept, with a value of text/csv.  Seeing this, the bank outputs the resource in the format that you asked for.
+
+So, wow, this is pretty cool.  You don't have to view the web as HTML.  That's exciting, right?
+
+Unfortunately, banks are not really known for paying much attention to this.  You send an Accept header in every single HTTP request, and the server will mostly just laugh at you and send you HTML anyway.
+
+So, is content-negotiation dead?
+
+Well, perhaps the original idea of content negotitation is dead.  Today, we are much more likely to use different URLs for downloadable formats, rather than creating variations of the same URL.  We don't negotiate formats.
+
+However, there are two other longstanding uses for variable responses which are still useful today, and more interestingly, a LOT of new ones, which is why Vary is starting to be interesting again.  I'll be using the traditional uses of Vary to explain how it works, telling you about new headers, how Vary works in the browser, which is very strange indeed, and finish by coming back to why Vary can be an important component of your React, Angular or Ember apps.
+
+Last year, when I was working at Nikkei, my colleagues would go to Nikkei.com and see the regular Japanese homepage.  But when I loaded the same site, I got this.  What's different about my request that results in a different response?
+
+All HTTP requests include an Accept-Language header, which expresses which languages you understand.  In this case I'm saying I prefer content in British or American English, and failing that, any variant of English.
+
+So I get an English language overlay, and they don't, on the same URL.  Same URL, different response.  This is content negotiation working today.  Now, normally, major sites like Nikkei, the New York Times, BBC.. will use a CDN to cache their content around the world. So the request for the page goes through a caching layer before it arrives at the server.
+
+The first user to request the page, Asako san, sends an Accept-Language header that indicates that she speaks Japanese.  The response, in Japanese, is cached by the CDN.  Now the second user, Jim, comes along.  Jim only understands English, but because he is requesting the same URL, the cache naively sends back the page that was generated for Asako.  Jim is confused.
+
+So how can we make use of CDNs, without sending people the wrong language by accident?  Well, one solution is this, which will definitely not send anyone the wrong page, but it will also keep your servers very warm and users on the US east coast might need to be very patient, while every single request is sent to your server.
+
+A better solution would be to make the cache smarter, so it knows that it needs to take account of the requested language when it's deciding which page to send you.  That, is what Vary can do.  It tells the cache that the response 'varies' based on the content of the Accept-Language header in the request, so the content of that header needs to be part of the cache key that we use top identify this object.
+
+Now, the two users can make their requests for the same URL, and get different responses.  The cache knows that the first response cannot be reused to satisfy the second request, so both requests end up going back to the server.
+
+Let's look in more detail about how this works.  When we receive the request, we can see it has an Accept-Language header, but we don't know yet if that's important or not (pretty much every single request has an accept language header, and in most cases it is not used).  For now, we will just compute a cache key in the normal way, which is usually a combination of the request method, hostname, and path.
+
+Assuming that the cache does not have an object with that key, we'll send this request to the server.  When the server responds, it tells us that it has taken account of the value of the Accept-Language header in figuring out what to send us.  So we also have to take account of the Accept-Language header when we store the cache object.  But since we already calculated the cache key, we'll store this extra bit as a second key, known as a secondary cache key or vary key.
+
+One important thing to remember here is that the value of the vary key comes from the request, not the response, but the response tells us which part of the request was important.
+
+When a second request arrives, first we compute a cache key, and we find an object in the cache that has that key.  However, the object we found also has a Vary header, so we go back to the request and compute a vary key using the header that the response varies on.  Now we compare that vary key with the one on the object that we found in the cache.  In this case the key is different than the one we have in the cache.  So although this object has the same cache key, it's not a match, because it has a different vary key, so we have to keep looking, or send the request to the server.
+
+In CDNs like Fastly which are known as "Shared caches", we can store lots of different variations of the same URL, with the same cache key but different vary keys.  When a request comes in, we might have to examine lots of variations before we find the right one or decide to send the request to the server.
+
+With language, this can actually be very inefficient.  Browsers have many different ways of expressing a preference for the same language. Here's some data I captured from three Fastly data center locations when it was daytime in the US and Asia and night in Europe.  The majority of requests to Washington and Tokyo are for the primary languages of those regions, but with a lot of variation in syntax.  All the different JAs in slots 1 to 6 of the Tokyo datacenter are all going to trigger an identical Japanese response but each will be stored separately in the cache because the cache is stupid.
+
+To avoid filling up all your caches with thousands of identical responses, we need to normalise!
+
+Today, this is hard, and the best you can do is a proprietary solution from your CDN.  Fastly has one called language_lookup, which picks the closest match for the requested language, and rewrites the header.  Using the same data as before I'm able to reduce the number of language variations from thousands to just six, and in some data centers, even fewer.
+
+The same can be applied to Accept-Encoding.  So far I've introduced two headers that you might consider using to generate varied responses: Accept, which doesn't work anymore, and Accept-Language, which I think is awesome and not used enough.  The third common header that starts with Accept is Accept-Encoding, and this tells the server which type of compression the browser understands.  This is becoming a lot more relevant recently because of a new type of compression called brotli, which is supported by only some browsers.
+
+But perhaps even more importantly, brotli makes for a lot more variation in the combinations of values that you might see in an Accept-Encoding header.  If your server doesn't support brotli, you might think it doesn't affect you, but it does because you'll start to see greater fragmentation of the values of the Accept-Encoding header.  In this example, let's assume your server can do gzip but not brotli.  All of these example requests will be treated as different cache objects, but 5 of them are actually the same.
+
+Again CDNs often have proprietary solutions to this, and in Fastly's case we automatically normalise Accept-Encoding.  But this should be something we can do in a standards-based way, right?  My colleague Mark Nottngham thinks so, and he's been working on a new proposal called Variants.  With this, you'll be able to specify the variations of your site that exist, so that the cache knows ahead of time that it's pointless to treat en-us and en-gb as two separate cache objects if your site only has one variation of english available.
+
+This would be great, both for Accept-Language and Accept-Encoding, but it doesn't help with all our vary problems.  When I visit the Financial Times website, my cookie header looks like this, but what if, for the homepage, the only thing that really matters is whether I am logged in?  Logged in users receive one page, and anonymous users see something else.  The only way the server has of knowing whether I'm logged in is to check the userAuthState cookie.  But including the entire Cookie header in the vary key would make the response almost uncachable, because some cookies like analytics or ad tracking change on every request, so we often have to just give up on caching the page at all.  This is a real shame, because if it's the homepage it's probably the most heavily traffiked page on the site, and there are only two variations of it.
+
+A proprietary solution might work for you if you're able to do some processing in your CDN and convert the complicated header into multiple simpler ones, and then vary on the new header instead of the original one.   In this example, I am taking an imagined cookie header, and decoding it into separate headers for User ID, Role and groups.  When the modified request is sent onwards to the origin, the origin can respond varying on one of the new headers, ignoring the cookie header.  The cache is then able to store a very small number of variations.
+
+But a standards based solution would be better, and Mark has another proposal called Key that would do this.  Basically a replacement for Vary, Key allows us to be far more specific about which part of the header we want to vary on - in this example, just the userAuthState cookie, but none of the other cookies.  Key allows for lots of interesting mini-algorithms to be embedded in the header, actually.  For example, numeric values can be bucketed into groups, strings can be searched for a pattern match, and values can be constrained to a whitelist of allowed values.
+
+<pause>
+
+Probably the most common mistake people make with Vary is to not use it consistently.  Imagine that you have two requests for the same URL, one with an Accept-Language header, and the other without.  When the server receives the request that includes the Accept-Language header, it parses it, generates a response in that language, and adds 'Vary: Accept-Language' to the response to tell us that it did it.  This makes sense and of course we've talked about this already.  However, if the request doesn't specify an Accept-Language, it seems to make sense that the server doesn't include a Vary header in the response.  But this is wrong.  After all, the server still decided to use one particular language for the response, presumablty a default, and if we don't include the Vary header, we're saying this response can be used *regardless* of the Accept-Language of the request.
+
+To fix this, you should always include the same Vary header in all responses on the same URL.  The key point is not that the request had an Accept-Language, the key point is that you looked for one, and if there had been one there, you would have used it.  That's enough to mean that you have to specify that header in a Vary on the response.
+
+So the general rule of thumb is: Always include the vary header in the response, even if the header you are varying on is not in the request.
+
+However.  With Vary there are always exceptions!  What if you are varying on more than one header, but they interact in a predictable way?  For example, one header specifies the user role: whether they are logged in or not, and another specifies which A/B testing bucket the user is in.  But you are only doing A/B testing with logged in users, so if the user's role is anonymous, all the A/B test variations will be identicial - indicated here as blue documents.
+
+I quite like a pattern where you can use selectively different Vary headers on responses for the same URL, provided that the result is deterministic - ie. you get the same result every time, and it doesn't depend on the order in which you read the cache entries.
+
+In this case we're fine, because if UserRole is subscriber, the response always varies on ABTestFlags as well.  But you need to be REALLY careful if you're going to attempt to do this.  If it works, it gives you very fine control over the number of variations that need to be cached, but in this situation it's often better to auto generate the Vary header in your backend code using some kind of middleware layer that observes when you try to read a request header value, and that's how we did it at Nikkei.
+
+Now, everything I've said so far is specific to the server, or to shared caches like CDNs.  In the browser, things are a bit different.  First of all, browsers don't store multiple variations.  Browsers only store one variation.
+
+I didn't beleive this, so I wrote a test case, and you can go to this URL if you don't beleive me.  This actually normally doesn't matter because browser caches are just for one person, and one person normally doesn't change their language or encoding support while they're browsing a website.  But they might log in or out, and that can be a problem.
+
+The other nice thing about CDNs is that roughly speaking they only have one cache, whereas a browser has at least six levels of caching.  Here's a diagram of what they are because I can certainly almost never remember all of them.  The image cache and preload cache are tied to a single pageview, and don't survive a navigation from one page to another.  The service worker cache API is programmatic, so if you're using it you probably know you're using it.  Then we have the normal HTTP cache, and finally the new HTTP/2 push cache, which stores things that the server has pushed to us and we don't know we need yet.
+
+All of these caches should respect Vary, but support is quite patchy.
+
+The service worker cache API was intended to fix what the authors saw as a bug in the browser HTTP cache, so the service worker spec says that the cache should store muiltiple variations.  Firefox does, but Chrome doesn't - it treats Vary the same as the normal HTTP cache and stores only one variation.  That's still true as of version 63.
+
+The HTTP push cache should respect vary too.  But it doesn't, in any browser.  So for the moment, don't push resources that have a Vary header.
+
+Push actually isn't that popular anyway.  Mozilla broke it completely in Firefox 56, and didn't notice because of a lack of tests targeting H2 push.
+
+A final weird thing about vary in the browser can happen if you serve an object that has both a Vary header and a validator such as an Etag. When the object becomes stale the browser will issue a conditional request, with an If-None-Match header.  If the server responds with a 304 Not Modifed, we are supposed to use the content body that we already have in the cache, but also did you know we're supposed to UPDATE the cached object with new headers from the response?  Those headers might include an updated Vary header that's different to the one on the cached object and that might make the response invalid for the request, even after we've already decided to use it.  I don't think anyone actually does this, because it would be super confusing, but if you have a use case for it I'd love to know what it is.
+
+Vary is a powerful thing, and understanding it will give you a lot of control over your site and your caching.  It's only now that it is starting to be really interesting, with new standards like client hints providing many new things we can vary on, like viewport width, device pixel ratio and save data.  With Save Data, for example, users will advertise to you that they want pages to be smaller and lighter, with lower quality images, no custom fonts and so on.  Using Vary, you can support this and keep the same URL structure that you already have.
+
+For those of you who build single page apps, your React or Angular apps want to download a boilerplate HTML file even when the user visits a deep link, but then you want to use the same URL to get the real data once the React app has booted.  Using fetch and custom headers, format negotiation is reborn!
+
+And brotli gives us a new, amazingly clever compression standard, which is not universally supported yet.  Vary has an important role to play while we bridge the gap from gzip to brotli.
+
+So I think you can ask yourself some questions: are you serving unnecessary requests that you could be caching?  Are you doing enough normalisation?  Could you be using client hints?  And do you have any feedback on the Variants, Key or Client-Hints proposals?  If you do, please do get involved.  Finally, does your hosting platform allow you to modify the headers on your responses?  If not, it might be holding you back from making a more efficient, faster site, with better user engagement.
+
+I hope I've given you some ideas about how you can use vary, so go and be variable!
+
+Thanks.

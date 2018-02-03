@@ -1,25 +1,37 @@
 /* Global styles */
 
-* { box-sizing: border-box }
-body, html { width: 100%; height: 100%; overflow: hidden }
-body { font-size: 1.75vw; }
-
-/* Panels */
-
-.captions { display: none; width: 100%; height: 100%; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: space-around; }
-.captionlist { list-style: none; flex: 0 0 auto; position: relative; width: 100%; }
-.captionlist li { position: absolute; left: 2vw; right: 2vw; font-size: 3vw; transform: translateY(-50%); transform-origin: 50% 50% 80px; transition: transform 0.5s cubic-bezier(0.35, 0.34, 0.36, 1), opacity 0.5s cubic-bezier(0.06, 0.34, 0.01, 1); }
-.captionlist li.past { opacity: 0; transform: translateY(-50%) rotateX(-20deg); }
-.captionlist li.future { opacity: 0; transform: translateY(-50%) rotateX(20deg); }
-.captionlist--src li { color: #799AAF; transition-delay: 0.1s; font-size: 2.5vw; }
-
-.wizard { display: none; margin: 0 calc(2vw + 20px);}
-.wizard .form-control-feedback { right: 95px; }
+body, html { width: 100%; }
+body { font-size: 1.75vw; background: black; }
 
 /* Hide/display main content panels based on app mode */
 
 .mode-captions .captions { display: flex; }
+.mode-slides .slides { display: block; }
 .mode-wizard .wizard { display: block; }
+.mode-slides.with-captions .slides { margin: 18vh 0 0 0; height: 82vh; }
+.mode-slides.with-captions .captions { display: flex; position: absolute; top: 0; height: 20vh;}
+.mode-slides.with-captions .captions li { font-size: 1.8vw; }
+.mode-slides.with-captions .captions .captionlist--src { display: none}
+
+
+/* Panels */
+
+.wizard { display: none; margin: 10vh calc(2vw + 20px) 0 calc(2vw + 20px); padding: 2vw; background: white; }
+.wizard .form-control-feedback { right: 95px; }
+
+.captions { display: none; width: 100vw; height: 100vh; overflow: hidden; flex-direction: column; align-items: center; justify-content: space-around; }
+.captionlist { list-style: none; flex: 0 0 auto; position: relative; width: 100%; }
+.captionlist li { position: absolute; left: 2vw; right: 2vw; font-size: 3vw; transform: translateY(-50%); transform-origin: 50% 50% 80px; color: white; text-align: center; }
+.captionlist li.past { opacity: 0; transform: translateY(-50%) rotateX(-20deg); }
+.captionlist li.future { opacity: 0; transform: translateY(-50%) rotateX(20deg); }
+.captionlist li span { display: inline-block; text-align: left; }
+.captionlist--src li { color: #799AAF; font-size: 2.5vw; }
+
+.slides { width: 100vw; height: 100vh; transition: all 1s; display: none }
+.slides ol { list-style-type: none; padding: 0; margin: 0; width: 100%; height: 100%; position: relative; }
+.slides li { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-size: contain; background-position: 50% 50%; background-repeat: no-repeat; transition: transform 0.5s, opacity 0.5s }
+.slides li.past { opacity: 0; transform: translateX(-2vw) scale(0.96) }
+.slides li.future { opacity: 0; transform: translateX(+2vw) scale(0.96) }
 
 /* Bootstrap overrides */
 

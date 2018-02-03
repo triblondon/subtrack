@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
 	<title>Conference captions</title>
 	<meta charset='UTF-8' />
-	<link rel='stylesheet' type='text/css' href='assets/css/bootstrap.css' />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link rel='stylesheet' type='text/css' href='assets/css/style.css' />
 </head>
 
@@ -17,20 +17,27 @@
 
 		<div class='well'>
 			<form>
-				<div class="form-group has-feedback">
+
+				<div class="form-group">
 					<label for='txtspreadsheeturl'>Spreadsheet URL:</label>
-					<div class="input-group">
-						<input type="text" id='txtspreadsheeturl' class="form-control input-lg" placeholder="eg. https://docs.google.com/spreadsheets/d/17Or0YaUEGtoK-OaxVWs1axz6ABLDJDwohwHOyfmxwF8/edit" aria-describedby='spreadsheeturl-help'>
-						<span class="input-group-btn">
-							<button class="btn btn-lg btn-primary" type="submit">Load</button>
-						</span>
-						<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-						<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-					</div>
-					<p id="spreadsheeturl-help" class="help-block"></p>
+      		<input type="text" class="form-control" id="txtspreadsheeturl" placeholder="eg. https://docs.google.com/spreadsheets/d/17Or0YaUEGtoK-OaxVWs1axz6ABLDJDwohwHOyfmxwF8/edit">
 				</div>
+
+				<div class="form-group">
+					<label for='selslides'>Present with slides:</label>
+					<select id='selslides' class="form-control input-lg">
+						<option value=''>No slides</option>
+						<option data-slide-count=66>20180211-tokyo</option>
+					</select>
+				</div>
+
+				<button class="btn btn-lg btn-primary" type="submit">Load</button>
+
+				<p id="spreadsheeturl-help" class="help-block"></p>
+
 			</form>
 		</div>
+
 	</div>
 
 	<div class='captions'>
@@ -38,7 +45,11 @@
 		<ul class='captionlist captionlist--src'></ul>
 	</div>
 
-	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js'></script>
+	<div class='slides'></div>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
 	<script src='assets/js/app.js'></script>
 
 </body>
