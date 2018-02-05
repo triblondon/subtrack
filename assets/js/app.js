@@ -94,7 +94,7 @@ $(() => {
 					if ($('#selslides').val()) {
 						for (var i=0; i<$('#selslides option:selected').get(0).dataset.slideCount; i++) {
 							const el = document.createElement('li');
-							el.style.backgroundImage = `url(/slides/${$('#selslides').val()}/dest-${i}.png)`;
+							el.style.backgroundImage = `url(slides/${$('#selslides').val()}/dest-${i}.png)`;
 							el.className = i == 0 ? 'current' : 'future';
 							slides.push(el);
 						}
