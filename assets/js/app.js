@@ -1,32 +1,38 @@
-$(() => {
-	const keycodes = { A: 65, S: 83, Q: 81, ENTER: 13, LEFT: 37, RIGHT: 39, UP: 38, DOWN: 40, SPACE: 32, PAGEUP: 33, PAGEDOWN: 34, ESC: 27 };
+document.addEventListener('DOMContentLoaded', () => {
+
 	const keygroups = {
 		nextSlide: {
-			codes: [ keycodes.RIGHT, keycodes.DOWN, keycodes.PAGEDOWN, keycodes.SPACE, keycodes.ENTER ],
-			action: () => setCurrent($('.slides .current').next('li'))
+			codes: [ 'ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter' ],
+			action: () => move('slides', 'next')
 		},
 		prevSlide: {
-			codes: [ keycodes.LEFT, keycodes.UP, keycodes.PAGEUP ],
-			action: () => setCurrent($('.slides .current').prev('li'))
+			codes: [ 'ArrowLeft', 'ArrowUp', 'PageUp' ],
+			action: () => move('slides', 'prev')
 		},
 		nextCaption: {
-			codes: [keycodes.S],
-			action: () => setCurrent($('.captions .current').next('li'))
+			codes: [ 's' ],
+			action: () => move('captions', 'next')
 		},
 		prevCaption: {
-			codes: [keycodes.A],
-			action: () => setCurrent($('.captions .current').prev('li'))
+			codes: [ 'a' ],
+			action: () => move('captions', 'prev')
 		},
-		toggleCaptions: { codes: [keycodes.Q], action: toggleCaptions },
-		reset: { codes :[keycodes.ESC], action: resetWizard }
+		toggleCaptions: { codes: [ 'q' ], action: toggleCaptions },
+		reset: { codes: [ 'Escape' ], action: resetWizard }
 	}
+	const spreadsheetUrlEl = document.getElementById('txtspreadsheeturl');
 
-	function setCurrent (els) {
-		if (els) {
-			els.prevAll('li').addClass('past').removeClass('current future');
-			els.addClass('current').removeClass('past future');
-			els.nextAll('li').addClass('future').removeClass('current past');
-		}
+	function move (type, direction) {
+		const lists = document.querySelectorAll('.'+type+' ol');
+		lists.forEach(list => {
+			const nodes = Array.from(list.querySelectorAll('li'));
+			const curIdx = nodes.findIndex(el => el.classList.contains('current'));
+			const tgtIdx = direction === 'next' ? Math.min(nodes.length - 1, curIdx + 1) : Math.max(0, curIdx - 1);
+			nodes.forEach((n, idx) => {
+				n.classList.remove('past', 'current', 'future');
+				n.classList.add(idx < tgtIdx ? 'past' : idx === tgtIdx ? 'current' : 'future');
+			})
+		})
 	}
 
 	function idFromURL (url) {
@@ -39,76 +45,82 @@ $(() => {
 	}
 
 	function setUIMode(mode) {
-		document.body.className = 'mode-'+mode;
+		document.body.classList.remove('mode-wizard', 'mode-slides', 'mode-captions')
+		document.body.classList.add('mode-' + mode);
 	}
 
 	function toggleCaptions() {
-		$(document.body).toggleClass('with-captions');
+		document.body.classList.toggle('with-captions');
 	}
 
 	function resetWizard() {
-		$('#txtspreadsheeturl').val('');
-		$('#txtspreadsheeturl').closest('.form-group').removeClass('has-error has-success');
-		$('#spreadsheeturl-help').empty();
-		$('.wizard button, .wizard input, .wizard select').removeAttr('disabled');
+		spreadsheetUrlEl.value = '';
+		spreadsheetUrlEl.closest('.form-group').classList.remove('has-error', 'has-success');
+		document.getElementById('spreadsheeturl-help').innerHTML = ''
+		document.querySelectorAll('.wizard button, .wizard input, .wizard select').forEach(el => { el.disabled = false; });
 		setUIMode('wizard');
 	}
 
-	$('body').on('keyup', function(e) {
-		const keyGroup = Object.keys(keygroups).find(k => keygroups[k].codes.includes(e.keyCode));
+	document.body.addEventListener('keyup', e => {
+		console.log(e.key);
+		const keyGroup = Object.keys(keygroups).find(k => keygroups[k].codes.includes(e.key));
 		if (keyGroup) keygroups[keyGroup].action();
 	});
 
-	$('.wizard').on('submit', function(e) {
+	document.querySelector('.wizard').addEventListener('submit', async e => {
 		e.preventDefault();
-		const id = idFromURL($('#txtspreadsheeturl').val());
+		const id = idFromURL(spreadsheetUrlEl.value);
 		const slides = [];
-		if (id) {
-			$('.wizard button, .wizard input, .wizard select').attr('disabled', 'disabled');
-			var timeout = setTimeout(function() {
-				$('.wizard *:disabled').removeAttr('disabled');
-				$('#spreadsheeturl-help')
-					.html('Unable to load spreadsheet - check that it is published to the web')
-					.closest('.form-group')
-					.addClass('has-error')
-					.removeClass('has-success')
-				;
-				$('#txtspreadsheeturl').get(0).focus();
-			}, 5000);
 
-			// Use start-index, max-results for pagination, see https://developers.google.com/gdata/docs/2.0/reference#Queries
-			$.ajax({
-				url: 'https://spreadsheets.google.com/feeds/list/'+id+'/od6/public/values?alt=json-in-script',
-				dataType: "jsonp",
-				success: function(data) {
-					clearTimeout(timeout);
-					$('.captionlist').empty();
-					data.feed.entry.forEach((entry, idx) => {
-						var src = entry['gsx$original']['$t'];
-						var target = entry['gsx$customtranslation']['$t'] || entry['gsx$machinetranslation']['$t'];
-						if (src && target) {
-							$('.captionlist--src').append(`<li class="${idx !== 0 ? 'future' : 'current'}"><span>${src}</span></li>`);
-							$('.captionlist--target').append(`<li class="${idx !== 0 ? 'future' : 'current'}"><span>${target}</span></li>`);
-						}
-					});
-					if ($('#selslides').val()) {
-						for (var i=0; i<$('#selslides option:selected').get(0).dataset.slideCount; i++) {
-							const el = document.createElement('li');
-							el.style.backgroundImage = `url(slides/${$('#selslides').val()}/dest-${i}.png)`;
-							el.className = i == 0 ? 'current' : 'future';
-							slides.push(el);
-						}
-						const slideList = document.createElement('ol');
-						slides.forEach(el => slideList.appendChild(el));
-						$('.slides').html(slideList);
-					}
-					setUIMode(slides.length ? 'slides' : 'captions');
-				}
-			});
+		if (!id) {
+			spreadsheetUrlEl.focus();
+			document.getElementById('spreadsheeturl-help').innerHTML = 'This is not a valid Google spreadsheets URL';
+			return;
+		}
+
+		document.querySelectorAll('.wizard button, .wizard input, .wizard select').forEach(el => { el.disabled = true; });
+
+		const timeout = setTimeout(() => {
+			document.querySelectorAll('.wizard *:disabled').forEach(el => { el.disabled = false; });
+			spreadsheetUrlEl.focus();
+			document.getElementById('spreadsheeturl-help').innerHTML = 'Unable to load spreadsheet - check that it is published to the web';
+			const frmGrpEl = document.getElementById('spreadsheeturl-help').closest('.form-group');
+			frmGrpEl.classList.add('has-error');
+			frmGrpEl.classList.remove('has-success');
+		}, 5000);
+
+		// Use start-index, max-results for pagination, see https://developers.google.com/gdata/docs/2.0/reference#Queries
+		const resp = await fetch('https://spreadsheets.google.com/feeds/list/'+id+'/od6/public/values?alt=json');
+		const data = await resp.json();
+		clearTimeout(timeout);
+
+		let srcHTML = targetHTML = '';
+		data.feed.entry.forEach((entry, idx) => {
+			const src = entry['gsx$original']['$t'];
+			const target = entry['gsx$customtranslation']['$t'] || entry['gsx$machinetranslation']['$t'];
+			if (src && target) {
+				srcHTML += `<li class="${idx !== 0 ? 'future' : 'current'}"><span>${src}</span></li>`;
+				targetHTML += `<li class="${idx !== 0 ? 'future' : 'current'}"><span>${target}</span></li>`;
+			}
+		});
+		document.querySelector('.captionlist--src').innerHTML = srcHTML;
+		document.querySelector('.captionlist--target').innerHTML = targetHTML;
+
+		const selSlidesEl = document.getElementById('selslides');
+		if (selSlidesEl.value) {
+			const slideCount = selSlidesEl.querySelector('option:checked').dataset.slideCount
+			const slideList = document.createElement('ol');
+			for (var i=0; i<slideCount; i++) {
+				const el = document.createElement('li');
+				el.style.backgroundImage = `url(slides/${selSlidesEl.value}/dest-${i}.png)`;
+				el.className = i == 0 ? 'current' : 'future';
+				slideList.appendChild(el)
+			}
+			document.querySelector('.slides').innerHTML = '';
+			document.querySelector('.slides').appendChild(slideList);
+			setUIMode('slides')
 		} else {
-			$('#txtspreadsheeturl').get(0).focus();
-			$('#spreadsheeturl-help').html('This is not a valid Google spreadsheets URL');
+			setUIMode('captions');
 		}
 	});
-
 });

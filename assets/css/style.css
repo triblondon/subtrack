@@ -30,8 +30,8 @@ body { font-size: 1.75vw; background: black; }
 .slides { width: 100vw; height: 100vh; transition: all 1s; display: none }
 .slides ol { list-style-type: none; padding: 0; margin: 0; width: 100%; height: 100%; position: relative; }
 .slides li { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-size: contain; background-position: 50% 50%; background-repeat: no-repeat; transition: transform 0.5s, opacity 0.5s }
-.slides li.past { opacity: 0; transform: translateX(-2vw) scale(0.96) }
-.slides li.future { opacity: 0; transform: translateX(+2vw) scale(0.96) }
+.slides li.past { opacity: 0; scale(0.98) }
+.slides li.future { opacity: 0; scale(0.98) }
 
 /* Bootstrap overrides */
 
