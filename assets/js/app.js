@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			action: () => move('captions', 'prev')
 		},
 		toggleCaptions: { codes: [ 'q' ], action: toggleCaptions },
+		toggleMode: { codes: [ 'm' ], action: () => setUIMode(document.body.classList.contains('mode-captions') ? 'slides' : 'captions') },
 		reset: { codes: [ 'Escape' ], action: resetWizard }
 	}
 	const spreadsheetUrlEl = document.getElementById('txtspreadsheeturl');
